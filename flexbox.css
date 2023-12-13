@@ -1,0 +1,42 @@
+.flex_container1{
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
+    align-content: flex-start;
+}
+.flex_container2{
+    flex: 50%;
+    display: flex;
+    flex-direction: column;
+}
+@media (min-height: 400px) {
+    .block2 {
+      height: 70%;
+    }
+  }
+.flex_container3{
+    flex:25%;
+    display: flex;
+    flex-direction: column;
+}
+
+.block1{
+    flex:100%;
+    height: 15%;
+}
+.block2{
+    flex:25%;
+
+}
+.block3{
+    flex:14%;
+}
+.block4{
+    flex:86%;
+}
+.block5{
+    flex:86%;
+}
+.block6{
+    flex:14%;
+}

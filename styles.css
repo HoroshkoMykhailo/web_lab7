@@ -94,17 +94,34 @@ p{
 .controls{
     flex:15%;
     display: flex;
-    padding-right: 10px;
     flex-direction: row-reverse;
+    justify-content: space-around;
     align-items: center;
     background-color: blue;
 }
 .anim{
     flex:85%;
     border: 5px solid green;
+    display: flex;
+    position: relative;
+    flex-wrap: wrap;
     box-sizing: border-box;
 }
 button{
     border-radius: 5px;
     font-size: 30px;
+}
+.quadrant{
+    flex: 50%;
+    background-image: url(images/texture.jpg);
+}
+.circle{
+    width: 20px;
+    height: 20px;
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    border-radius: 50%;
+    background-color: green;
+    transform: translate(-50%, -50%);
 }

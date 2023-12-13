@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     document.getElementById("play").onclick = play;
     document.getElementById("close").onclick = close;
     document.getElementById("start").onclick = start;
+    document.getElementById("reload").onclick = reload;
 });
 function play(){
     const work = document.querySelector(".work");
@@ -11,27 +12,50 @@ function close(){
     const work = document.querySelector(".work");
     work.style.visibility = "hidden";
 }
+function reload(){
+    const circle = document.querySelector(".circle");
+    circle.style.marginLeft = 0;
+    circle.style.marginTop = 0;
+    const reload = document.getElementById("reload");
+    reload.style.display = "none";
+    const button = document.getElementById("start");
+    button.style.display = "block";
+    button.onclick = start;
+}
 async function start(){
+    const button = document.getElementById("start");
+    button.onclick = null;
     const circle = document.querySelector(".circle");
     let pixels = 0;
     let left = 0;
     let top = 0;
+    let string = "";
     while(true){
         await moveleft(circle, left-pixels, left);
-        left = -pixels;
+        left = left-pixels;
+        string += "(" + left + ";" + top +")";
         pixels++;
         await movetop(circle, top-pixels, top);
-        top = -pixels;
+        top = top-pixels;
+        string += "(" + left + ";" + top +")";
         pixels++;
         await moveright(circle, left + pixels, left);
         left = left + pixels;
+        string += "(" + left + ";" + top +")";
         pixels++;
         await movebottom(circle, top + pixels, top);
         top = top + pixels;
+        pixels++;
+        string += "(" + left + ";" + top +")";
+
+        string = "";
         if(pixels > 100){
             break;
         }
     }
+    button.style.display = "none";
+    const reload = document.getElementById("reload");
+    reload.style.display = "block";
     
 }
 function sleep(ms) {

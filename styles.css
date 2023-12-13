@@ -111,6 +111,9 @@ button{
     border-radius: 5px;
     font-size: 30px;
 }
+#reload{
+    display: none;
+}
 .quadrant{
     flex: 50%;
     background-image: url(images/texture.jpg);

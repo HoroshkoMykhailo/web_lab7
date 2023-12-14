@@ -14,6 +14,7 @@ function play(){
     table.innerHTML = '';
     curr = new Date();
     start_time = curr.getTime();
+    save_to_server("Button play was pressed");
     localStorage.setItem(count, "Button play was pressed" + "(" + 0 + ").");
     count++;
     work.style.display = "flex";
@@ -26,17 +27,23 @@ function close(){
     const work = document.querySelector(".work");
     const table = document.querySelector(".output");
     curr = new Date();
+    save_to_server("Button close was pressed");
     localStorage.setItem(count, "Button close was pressed" + "(" + (curr.getTime() - start_time) + ").");
     count++;
     let item, row, cell;
     row = table.insertRow();
     cell = row.insertCell(0);
     cell.innerHTML = "Local Storage";
+    cell = row.insertCell(1);
+    cell.innerHTML = "Server storage";
+    let data = load_from_server();
     for(i = 1; i < count; i++){
         item = localStorage.getItem(i);
         row = table.insertRow();
         cell = row.insertCell(0);
         cell.innerHTML = item;
+        cell = row.insertCell(1);
+        cell.innerHTNL = data[i-1].action + "(" + (data[i-1].timestamp - start_time) + ").";
     }
     count = 1;
     table.style.display = "block";
@@ -46,6 +53,7 @@ function close(){
 function reload(){
     curr = new Date();
     if(flag){
+        save_to_server("Button reload was pressed");
         localStorage.setItem(count, "Button reload was pressed" + "(" + (curr.getTime() - start_time) + ").");
         count++;
     }
@@ -60,6 +68,7 @@ function reload(){
 }
 async function start(){
     curr = new Date();
+    save_to_server("Button start was pressed");
     localStorage.setItem(count, "Button start was pressed" + "(" + (curr.getTime() - start_time) + ").");
     count++;
     const button = document.getElementById("start");
@@ -70,6 +79,7 @@ async function start(){
     while(true){
         await moveleft(circle, left-pixels, left);
         curr = new Date();
+        save_to_server("Circle went left by " + pixels);
         localStorage.setItem(count, "Circle went left by " + pixels + "(" + (curr.getTime() - start_time) + ")." );
         count++;
         left = left-pixels;
@@ -83,6 +93,7 @@ async function start(){
         pixels++;
         await movetop(circle, top-pixels, top);
         curr = new Date();
+        save_to_server("Circle went top by " + pixels);
         localStorage.setItem(count, "Circle went top by " + pixels + "(" + (curr.getTime() - start_time) + ").");
         count++;
         top = top-pixels;
@@ -95,6 +106,7 @@ async function start(){
         pixels++;
         await moveright(circle, left + pixels, left);
         curr = new Date();
+        save_to_server("Circle went right by " + pixels);
         localStorage.setItem(count, "Circle went right by " + pixels + "(" + (curr.getTime() - start_time) + ")." );
         count++;
         left = left + pixels;
@@ -108,6 +120,7 @@ async function start(){
         pixels++;
         await movebottom(circle, top + pixels, top);
         curr = new Date();
+        save_to_server("Circle went bottom by " + pixels);
         localStorage.setItem(count, "Circle went bottom by " + pixels + "(" + (curr.getTime() - start_time) + ").");
         count++;
         top = top + pixels;
@@ -157,4 +170,15 @@ async function movetop(el, pixels, start){
         el.style.marginTop = start + "px";
         await sleep(10);
     }
+}
+
+async function save_to_server(data){
+    fetch("save_to_file.php", {
+        method: "POST",
+        body: data
+    })
+}
+async function load_from_server(){
+    let data = fetch("read_from_file.php");
+    return data;
 }

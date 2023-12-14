@@ -3,16 +3,52 @@ document.addEventListener("DOMContentLoaded", async function () {
     document.getElementById("close").onclick = close;
     document.getElementById("start").onclick = start;
     document.getElementById("reload").onclick = reload;
+    flag = true;
 });
+let count = 1;
+let start_time, curr, flag;
 function play(){
     const work = document.querySelector(".work");
-    work.style.visibility = "visible";
+    const table = document.querySelector(".output");
+    table.style.display = "none";
+    table.innerHTML = '';
+    curr = new Date();
+    start_time = curr.getTime();
+    localStorage.setItem(count, "Button play was pressed" + "(" + 0 + ").");
+    count++;
+    work.style.display = "flex";
+    
 }
 function close(){
+    flag = false;
+    reload();
+    flag = true;
     const work = document.querySelector(".work");
-    work.style.visibility = "hidden";
+    const table = document.querySelector(".output");
+    curr = new Date();
+    localStorage.setItem(count, "Button close was pressed" + "(" + (curr.getTime() - start_time) + ").");
+    count++;
+    let item, row, cell;
+    row = table.insertRow();
+    cell = row.insertCell(0);
+    cell.innerHTML = "Local Storage";
+    for(i = 1; i < count; i++){
+        item = localStorage.getItem(i);
+        row = table.insertRow();
+        cell = row.insertCell(0);
+        cell.innerHTML = item;
+    }
+    count = 1;
+    table.style.display = "block";
+    localStorage.clear();
+    work.style.display = "none";
 }
 function reload(){
+    curr = new Date();
+    if(flag){
+        localStorage.setItem(count, "Button reload was pressed" + "(" + (curr.getTime() - start_time) + ").");
+        count++;
+    }
     const circle = document.querySelector(".circle");
     circle.style.marginLeft = 0;
     circle.style.marginTop = 0;
@@ -23,35 +59,66 @@ function reload(){
     button.onclick = start;
 }
 async function start(){
+    curr = new Date();
+    localStorage.setItem(count, "Button start was pressed" + "(" + (curr.getTime() - start_time) + ").");
+    count++;
     const button = document.getElementById("start");
     button.onclick = null;
     const circle = document.querySelector(".circle");
-    let pixels = 0;
-    let left = 0;
-    let top = 0;
-    let string = "";
+    let pixels = 0, left = 0, top = 0, countq = 0;
+    let left_top = false, right_top = false, right_down = false, left_down = false;
     while(true){
         await moveleft(circle, left-pixels, left);
+        curr = new Date();
+        localStorage.setItem(count, "Circle went left by " + pixels + "(" + (curr.getTime() - start_time) + ")." );
+        count++;
         left = left-pixels;
-        string += "(" + left + ";" + top +")";
+
+        if(!left_down && left < -10 && top > 10){
+            countq++;
+            left_down = true;
+            if(countq == 4) break;
+        }
+
         pixels++;
         await movetop(circle, top-pixels, top);
+        curr = new Date();
+        localStorage.setItem(count, "Circle went top by " + pixels + "(" + (curr.getTime() - start_time) + ").");
+        count++;
         top = top-pixels;
-        string += "(" + left + ";" + top +")";
+
+        if(!left_top && left < -10 && top < -10){
+            countq++;
+            left_top = true;
+            if(countq == 4) break;
+        }
         pixels++;
         await moveright(circle, left + pixels, left);
+        curr = new Date();
+        localStorage.setItem(count, "Circle went right by " + pixels + "(" + (curr.getTime() - start_time) + ")." );
+        count++;
         left = left + pixels;
-        string += "(" + left + ";" + top +")";
+
+        if(!right_top && left > 10 && top < -10){
+            countq++;
+            right_top = true;
+            if(countq == 4) break;
+        }
+
         pixels++;
         await movebottom(circle, top + pixels, top);
+        curr = new Date();
+        localStorage.setItem(count, "Circle went bottom by " + pixels + "(" + (curr.getTime() - start_time) + ").");
+        count++;
         top = top + pixels;
-        pixels++;
-        string += "(" + left + ";" + top +")";
 
-        string = "";
-        if(pixels > 100){
-            break;
+        if(!right_down && left > 10 && top > 10){
+            countq++;
+            right_down = true;
+            if(countq == 4) break;
         }
+
+        pixels++;
     }
     button.style.display = "none";
     const reload = document.getElementById("reload");
@@ -66,21 +133,21 @@ async function moveright(el, pixels, start){
     while(start < pixels){
         start++;
         el.style.marginLeft = start + "px";
-        await sleep(1);
+        await sleep(10);
     }
 }
 async function movebottom(el, pixels, start){
     while(start < pixels){
         start++;
         el.style.marginTop = start + "px";
-        await sleep(1);
+        await sleep(10);
     }
 }
 async function moveleft(el, pixels, start){
     while(start > pixels){
         start--;
         el.style.marginLeft = start + "px";
-        await sleep(1);
+        await sleep(10);
     }
     
 }
@@ -88,6 +155,6 @@ async function movetop(el, pixels, start){
     while(start > pixels){
         start--;
         el.style.marginTop = start + "px";
-        await sleep(1);
+        await sleep(10);
     }
 }

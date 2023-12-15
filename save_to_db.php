@@ -2,7 +2,7 @@
     $input = file_get_contents('php://input');
     // Дані для підключення
     $servername = "localhost";
-    $username = "****";
+    $username = "******";
     $password = "******";
     $dbname = "id21671045_actions";
 

@@ -1,8 +1,8 @@
 <?php
     // Дані для підключення
     $servername = "localhost";
-    $username = "****";
-    $password = "******";
+    $username = "********";
+    $password = "********";
     $dbname = "id21671045_actions";
 
 

@@ -23,30 +23,43 @@ async function close(){
     flag = false;
     reload();
     flag = true;
+
+
     const work = document.querySelector(".work");
     const table = document.querySelector(".output");
+
+
     localStorage.setItem(count, "Button close was pressed" + "(" + (Date.now() - start_time) + ").");
     await save_to_server("Button close was pressed");
     count++;
-    let item, row, cell;
+
+    let item, row, cell, list = [];
+
     row = table.insertRow();
     cell = row.insertCell(0);
     cell.innerHTML = "Local Storage";
     cell = row.insertCell(1);
     cell.innerHTML = "Server storage";
     let data = await load_from_server();
-    console.log(start_time);
+
+
     for(i = 1; i < count; i++){
+
         item = localStorage.getItem(i);
+        list.push(item);
         row = table.insertRow();
         cell = row.insertCell(0);
         cell.innerHTML = item;
+
+
         cell = row.insertCell(1);
-        console.log(data[i-1].time);
         var milliseconds = new Date(data[i-1].time).getTime() + 7.2e6;
         console.log(milliseconds);
         cell.innerHTML = data[i - 1].action + "(" + (milliseconds - start_time) + ").";
     }
+
+    save_all(list);
+
     count = 1;
     table.style.display = "block";
     localStorage.clear();
@@ -185,13 +198,20 @@ async function movetop(el, pixels, start){
 
 async function save_to_server(data){
     console.log(data);
-    await fetch("save_to_file.php", {
+    await fetch("save_to_db.php", {
         method: "POST",
         body: data
     })
 }
+async function save_all(list){
+    let to_save = JSON.stringify(list);
+    fetch("save_all.php", {
+        method: "POST",
+        body: to_save
+    })
+}
 async function load_from_server(){
-    let response = await fetch("read_from_file.php");
+    let response = await fetch("read_from_db.php");
     let data = await response.json();
     return data;
 }

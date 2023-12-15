@@ -12,23 +12,21 @@ function play(){
     const table = document.querySelector(".output");
     table.style.display = "none";
     table.innerHTML = '';
-    curr = new Date();
-    start_time = curr.getTime();
-    save_to_server("Button play was pressed");
+    start_time = Date.now();
     localStorage.setItem(count, "Button play was pressed" + "(" + 0 + ").");
+    save_to_server("Button play was pressed");
     count++;
     work.style.display = "flex";
     
 }
-function close(){
+async function close(){
     flag = false;
     reload();
     flag = true;
     const work = document.querySelector(".work");
     const table = document.querySelector(".output");
-    curr = new Date();
-    save_to_server("Button close was pressed");
-    localStorage.setItem(count, "Button close was pressed" + "(" + (curr.getTime() - start_time) + ").");
+    localStorage.setItem(count, "Button close was pressed" + "(" + (Date.now() - start_time) + ").");
+    await save_to_server("Button close was pressed");
     count++;
     let item, row, cell;
     row = table.insertRow();
@@ -36,14 +34,18 @@ function close(){
     cell.innerHTML = "Local Storage";
     cell = row.insertCell(1);
     cell.innerHTML = "Server storage";
-    let data = load_from_server();
+    let data = await load_from_server();
+    console.log(start_time);
     for(i = 1; i < count; i++){
         item = localStorage.getItem(i);
         row = table.insertRow();
         cell = row.insertCell(0);
         cell.innerHTML = item;
         cell = row.insertCell(1);
-        cell.innerHTNL = data[i-1].action + "(" + (data[i-1].timestamp - start_time) + ").";
+        console.log(data[i-1].time);
+        var milliseconds = new Date(data[i-1].time).getTime() + 7.2e6;
+        console.log(milliseconds);
+        cell.innerHTML = data[i - 1].action + "(" + (milliseconds - start_time) + ").";
     }
     count = 1;
     table.style.display = "block";
@@ -51,10 +53,9 @@ function close(){
     work.style.display = "none";
 }
 function reload(){
-    curr = new Date();
     if(flag){
+        localStorage.setItem(count, "Button reload was pressed" + "(" + (Date.now() - start_time) + ").");
         save_to_server("Button reload was pressed");
-        localStorage.setItem(count, "Button reload was pressed" + "(" + (curr.getTime() - start_time) + ").");
         count++;
     }
     const circle = document.querySelector(".circle");
@@ -67,9 +68,9 @@ function reload(){
     button.onclick = start;
 }
 async function start(){
-    curr = new Date();
+    localStorage.setItem(count, "Button start was pressed" + "(" + (Date.now() - start_time) + ").");
     save_to_server("Button start was pressed");
-    localStorage.setItem(count, "Button start was pressed" + "(" + (curr.getTime() - start_time) + ").");
+    
     count++;
     const button = document.getElementById("start");
     button.onclick = null;
@@ -78,13 +79,16 @@ async function start(){
     let left_top = false, right_top = false, right_down = false, left_down = false;
     while(true){
         await moveleft(circle, left-pixels, left);
-        curr = new Date();
+        localStorage.setItem(count, "Circle went left by " + pixels + "(" + (Date.now()- start_time) + ")." );
         save_to_server("Circle went left by " + pixels);
-        localStorage.setItem(count, "Circle went left by " + pixels + "(" + (curr.getTime() - start_time) + ")." );
+        
         count++;
         left = left-pixels;
 
         if(!left_down && left < -10 && top > 10){
+            localStorage.setItem(count, "Circle entered left-bottom quadrant (" + (Date.now() - start_time) + ")." );
+            save_to_server("Circle entered left-bottom quadrant");
+            count++;
             countq++;
             left_down = true;
             if(countq == 4) break;
@@ -92,14 +96,16 @@ async function start(){
 
         pixels++;
         await movetop(circle, top-pixels, top);
-        curr = new Date();
         save_to_server("Circle went top by " + pixels);
-        localStorage.setItem(count, "Circle went top by " + pixels + "(" + (curr.getTime() - start_time) + ").");
+        localStorage.setItem(count, "Circle went top by " + pixels + "(" + (Date.now() - start_time) + ").");
         count++;
         top = top-pixels;
 
         if(!left_top && left < -10 && top < -10){
             countq++;
+            localStorage.setItem(count, "Circle entered left-top quadrant (" + (Date.now() - start_time) + ")." );
+            save_to_server("Circle entered left-top quadrant");           
+            count++;
             left_top = true;
             if(countq == 4) break;
         }
@@ -107,26 +113,31 @@ async function start(){
         await moveright(circle, left + pixels, left);
         curr = new Date();
         save_to_server("Circle went right by " + pixels);
-        localStorage.setItem(count, "Circle went right by " + pixels + "(" + (curr.getTime() - start_time) + ")." );
+        localStorage.setItem(count, "Circle went right by " + pixels + "(" + (Date.now() - start_time) + ")." );
         count++;
         left = left + pixels;
 
         if(!right_top && left > 10 && top < -10){
             countq++;
+            localStorage.setItem(count, "Circle entered right-top quadrant (" + (Date.now() - start_time) + ")." );
+            save_to_server("Circle entered right-top quadrant");            
+            count++;
             right_top = true;
             if(countq == 4) break;
         }
 
         pixels++;
         await movebottom(circle, top + pixels, top);
-        curr = new Date();
         save_to_server("Circle went bottom by " + pixels);
-        localStorage.setItem(count, "Circle went bottom by " + pixels + "(" + (curr.getTime() - start_time) + ").");
+        localStorage.setItem(count, "Circle went bottom by " + pixels + "(" + (Date.now() - start_time) + ").");
         count++;
         top = top + pixels;
 
         if(!right_down && left > 10 && top > 10){
             countq++;
+            localStorage.setItem(count, "Circle entered right-bottom quadrant (" + (Date.now() - start_time) + ")." );
+            save_to_server("Circle entered right-bottom quadrant");            
+            count++;
             right_down = true;
             if(countq == 4) break;
         }
@@ -173,12 +184,14 @@ async function movetop(el, pixels, start){
 }
 
 async function save_to_server(data){
-    fetch("save_to_file.php", {
+    console.log(data);
+    await fetch("save_to_file.php", {
         method: "POST",
         body: data
     })
 }
 async function load_from_server(){
-    let data = fetch("read_from_file.php");
+    let response = await fetch("read_from_file.php");
+    let data = await response.json();
     return data;
 }

@@ -1,10 +1,13 @@
 <?php
+    // Дані для підключення
     $servername = "localhost";
-    $username = "MykhailoHoroshko";
-    $password = "D1vt10092005.";
-    $dbname = "id21671045_actions"
+    $username = "****";
+    $password = "******";
+    $dbname = "id21671045_actions";
+
+
     $conn = new mysqli($servername, $username, $password, $dbname);
-    $sql = "SELECT * FROM actions ";
+    $sql = "SELECT * FROM `actions` ";
     if ($conn->connect_error) {
         die("Connection error: " . $conn->connect_error);
     }
@@ -14,9 +17,12 @@
         while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
-    
         header('Content-Type: application/json');
         echo json_encode($data);
     }
+    $sql = "DELETE FROM `actions`";
+    $conn->query($sql);
+    $sql = "ALTER TABLE `actions` AUTO_INCREMENT = 1";
+    $conn->query($sql);
     $conn->close();
 ?>
